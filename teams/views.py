@@ -41,10 +41,11 @@ class TeamViewParams(APIView):
     def patch(self, request, team_id):
         try:
             team = Team.objects.get(pk=team_id)
-            print(request.data, team.__dict__)
-            test = team.__dict__ 
-            print(test[request.data])
-            return Response(None, 204)
+
+            for key, value in request.data.items():
+                setattr(team, key, value)
+            team.save()
+            return Response(model_to_dict(team))
 
         except Team.DoesNotExist:
             return Response({"message": "Team not found"}, 404)
